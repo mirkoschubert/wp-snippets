@@ -1,8 +1,12 @@
 
 Todo:
   ☐ Create Child Theme
+  ☐ Localize Google Fonts
+  ☐ Make links in the comments truely external
+  ☐ Remove the commentor's IP
   ☐ Disable oEmbeds
   ☐ Disable WP Emojis
-  ☐ Disable global DNS Prefetching
+  ☐ Remove global DNS Prefetching
+  ☐ Disable WordPress REST API
 Optional:
   ☐ 
