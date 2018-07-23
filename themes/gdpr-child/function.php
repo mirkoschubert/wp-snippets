@@ -5,7 +5,7 @@
  */
 function gdpr_child_scripts() {
   wp_enqueue_style('gdpr-style', get_template_directory_uri() . '/style.css', array(), null); // original style.css
-  wp_enqueue_style( 'gdpr-child-style', get_stylesheet_directory_uri() . '/style.css', 'yoko-style', null ); // child style.css
+  wp_enqueue_style( 'gdpr-child-style', get_stylesheet_directory_uri() . '/style.css', 'gdpr-style', null ); // child style.css
   wp_enqueue_style('gdpr-fonts', get_stylesheet_directory_uri() . '/css/fonts.css'); // Localize Google Fonts
 }
 add_action( 'wp_enqueue_scripts' , 'gdpr' );
@@ -86,7 +86,6 @@ function gdpr_child_disable_embeds_rewrites( $rules ) {
 /**
  * Disable the emoji's
  */
-add_action( 'init', 'disable_emojis' );
 function gdpr_child_disable_emojis() {
   remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
   remove_action( 'admin_print_scripts', 'print_emoji_detection_script' );
@@ -98,6 +97,7 @@ function gdpr_child_disable_emojis() {
   add_filter( 'tiny_mce_plugins', 'gdpr_child_disable_emojis_tinymce' );
   add_filter( 'wp_resource_hints', 'gdpr_child_disable_emojis_remove_dns_prefetch', 10, 2 );
 }
+add_action( 'init', 'gdpr_child_disable_emojis' );
 
 
 /**
@@ -129,13 +129,52 @@ function gdpr_child_disable_emojis_remove_dns_prefetch( $urls, $relation_type ) 
 /**
  * Remove DNS Prefetching (a.w.org)
  */
-add_action( 'init', 'remove_dns_prefetch');
-function remove_dns_prefetch() {
+function gdpr_child_remove_dns_prefetch() {
   remove_action('wp_head', 'wp_resource_hints', 2);
 }
+add_action( 'init', 'gdpr_child_remove_dns_prefetch');
 
 
 // INFO: Disable WordPress REST API
 
-add_filter('rest_enabled', '_return_false');
-add_filter('rest_jsonp_enabled', '_return_false');
+/**
+* Throw an Error if someone tries to access the REST API
+* Whitelist solution
+*/
+function zine_child_disable_rest_api($access) {
+
+  if (!is_whitelisted($whitelist)) {
+    return new WP_Error('rest_disabled', __('The REST API on this site has been disabled.'), array('status' => rest_authorization_required_code()));
+  }
+}
+add_filter( 'rest_authentication_errors', 'zine_child_disable_rest_api' );
+
+// Gets the current route
+function get_current_namespace() {
+
+  if (isset($_REQUEST['rest_route'])) {
+    $route = ltrim($_REQUEST['rest_route'], '/');
+  } elseif (get_option('permalink_structure')) {
+    $pos = strlen(get_rest_url());
+    $route = substr(get_home_url() . urldecode($_SERVER['REQUEST_URI']), $pos);
+    $route = trim($route, '/');
+  }
+  return substr($route, 0, strpos($route, '/'));
+}
+
+// Checks if route is whitelisted
+function is_whitelisted() {
+
+  $whitelist = array('mwl', 'shariff'); // INFO: Change whitelist here!
+  $namespace = get_current_namespace();
+
+  foreach ($whitelist as $ns) {
+    if ($ns == $namespace) return true;
+  }
+  return false;
+}
+
+// Remove REST API info from head and headers
+remove_action( 'xmlrpc_rsd_apis', 'rest_output_rsd' );
+remove_action( 'wp_head', 'rest_output_link_wp_head', 10 );
+remove_action( 'template_redirect', 'rest_output_link_header', 11 );
