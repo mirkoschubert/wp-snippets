@@ -1,3 +1,6 @@
 [submodule "themes/divi-child"]
 	path = themes/divi-child
 	url = git@github.com:mirkoschubert/divi-child.git
+[submodule "themes/gdpr-child"]
+	path = themes/gdpr-child
+	url = git@github.com:mirkoschubert/gdpr-child.git
