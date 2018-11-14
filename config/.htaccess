@@ -6,23 +6,16 @@
 SetEnvIf X-Forwarded-Proto https HTTPS=on
 
 # Prevent wp-config.php from being loaded:
-<files wp-config.php>
+<Files wp-config.php>
     order allow,deny
     deny from all
-</files>
-
-# Protect .htaccess
-<Files ~ "^.*\.([Hh][Tt][Aa])">
-    order allow,deny
-    deny from all
-    satisfy all
 </Files>
 
 # Prevent this .htaccess from being accessed:
-<files .htaccess>
+<Files .htaccess>
     order allow,deny
     deny from all
-</files>
+</Files>
 
 # Secure wp-includes
 <IfModule mod_rewrite.c>
@@ -73,21 +66,6 @@ SetEnvIf X-Forwarded-Proto https HTTPS=on
 </IfModule>
 
 
-### Default Wordpress Settings
-
-# BEGIN WordPress
-<IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteBase /
-  RewriteRule ^index\.php$ - [L]
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule . /index.php [L]
-</IfModule>
-
-# END WordPress
-
-
 ### Speed & Compression
 
 # Expire headers  
@@ -130,18 +108,18 @@ SetEnvIf X-Forwarded-Proto https HTTPS=on
 
 # Cache-Control Headers
 <IfModule mod_headers.c>  
-    <filesMatch "\.(ico|jpe?g|png|gif|swf)$">  
+    <FilesMatch "\.(ico|jpe?g|png|gif|swf)$">  
         Header set Cache-Control "public"  
-    </filesMatch>  
-    <filesMatch "\.(css)$">  
+    </FilesMatch>  
+    <FilesMatch "\.(css)$">  
         Header set Cache-Control "public"  
-    </filesMatch>  
-    <filesMatch "\.(js)$">  
+    </FilesMatch>  
+    <FilesMatch "\.(js)$">  
         Header set Cache-Control "private"  
-    </filesMatch>  
-    <filesMatch "\.(x?html?|php)$">  
+    </FilesMatch>  
+    <FilesMatch "\.(x?html?|php)$">  
         Header set Cache-Control "private, must-revalidate"  
-    </filesMatch>
+    </FilesMatch>
 </IfModule>  
 
 # mod_deflate
@@ -199,6 +177,20 @@ AddEncoding gzip svgz
 AddType text/x-component .htc
 
 
+# Manual 301 Redirects (please fill out)
+# redirect 301 /old-page-url.html https://www.domain.co.uk/new-page-url
 
-# Manual 301 Redirects
-#redirect 301 /old-page-url.html https://www.domain.co.uk/new-page-url
+
+### Default Wordpress Settings
+
+# BEGIN WordPress
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.php$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.php [L]
+</IfModule>
+
+# END WordPress
