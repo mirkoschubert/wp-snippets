@@ -1,4 +1,9 @@
-### Source: WP .htaccess Boilerplate - https://github.com/Creare/WP-htaccess/
+### PHP
+
+php_value memory_limit 512M
+php_value max_execution_time 180
+php_value max_input_time 180
+php_value display_errors 0
 
 ### Security
 
