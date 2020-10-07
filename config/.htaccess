@@ -22,6 +22,13 @@ SetEnvIf X-Forwarded-Proto https HTTPS=on
     deny from all
 </Files>
 
+# Block XMLRPC requests
+<Files xmlrpc.php>
+order deny,allow
+deny from all
+# allow from 127.0.0.1
+</Files>
+
 # Secure wp-includes
 <IfModule mod_rewrite.c>
   RewriteEngine On
@@ -52,7 +59,6 @@ SetEnvIf X-Forwarded-Proto https HTTPS=on
     RewriteRule "(^|/)\." - [F]
 </IfModule>
 
-
 # SSL Rewrite
 <IfModule mod_rewrite.c>
   RewriteEngine On
@@ -81,6 +87,7 @@ SetEnvIf X-Forwarded-Proto https HTTPS=on
   ExpiresByType image/jpeg "access plus 1 year"
   ExpiresByType image/gif "access plus 1 year"
   ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
   ExpiresByType image/svg+xml "access plus 1 month" 
   ExpiresByType text/css "access plus 1 month"
   ExpiresByType text/html "access plus 1 minute"
@@ -105,22 +112,26 @@ SetEnvIf X-Forwarded-Proto https HTTPS=on
   ExpiresByType video/webm "access plus 1 month" 
   ExpiresByType application/atom+xml "access plus 1 hour" 
   ExpiresByType application/rss+xml "access plus 1 hour" 
-  ExpiresByType application/font-woff "access plus 1 month" 
+  ExpiresByType application/x-font-woff "access plus 1 month" 
   ExpiresByType application/vnd.ms-fontobject "access plus 1 month" 
   ExpiresByType application/x-font-ttf "access plus 1 month" 
+  ExpiresByType font/ttf "access plus 4 months" 
+  ExpiresByType font/otf "access plus 4 months" 
+  ExpiresByType font/woff "access plus 4 months" 
+  ExpiresByType font/woff2 "access plus 4 months" 
   ExpiresByType font/opentype "access plus 1 month" 
 </IfModule>
 
 # Cache-Control Headers
 <IfModule mod_headers.c>  
-    <FilesMatch "\.(ico|jpe?g|png|gif|swf)$">  
-        Header set Cache-Control "public"  
+    <FilesMatch "\.(ico|jpe?g|png|gif|webp|swf|svg|woff|woff2)$">  
+        Header set Cache-Control "public, max-age=31536000"  
     </FilesMatch>  
     <FilesMatch "\.(css)$">  
-        Header set Cache-Control "public"  
+        Header set Cache-Control "public, max-age=2678400"  
     </FilesMatch>  
     <FilesMatch "\.(js)$">  
-        Header set Cache-Control "private"  
+        Header set Cache-Control "private, max-age=2678400"  
     </FilesMatch>  
     <FilesMatch "\.(x?html?|php)$">  
         Header set Cache-Control "private, must-revalidate"  
@@ -183,7 +194,7 @@ AddType text/x-component .htc
 
 
 # Manual 301 Redirects (please fill out)
-# redirect 301 /old-page-url.html https://www.domain.co.uk/new-page-url
+# redirect 301 /old-page-url.html https://new-site.com/new-page-url
 
 
 ### Default Wordpress Settings
